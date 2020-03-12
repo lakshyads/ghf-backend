@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const http = require('http');
+require('dotenv').config({ path: __dirname + '/.env' })
 
 const API_KEY = process.env.API_KEY;
 
@@ -11,6 +12,7 @@ server.use(bodyParser.urlencoded({
 }));
 server.use(bodyParser.json());
 
+// Webhook endpoint
 server.post('/get-movie-details', (req, res) => {
 
     const movieToSearch = req.body.result && req.body.result.parameters && req.body.result.parameters.movie ? req.body.result.parameters.movie : 'The Godfather';
@@ -38,5 +40,14 @@ server.post('/get-movie-details', (req, res) => {
             source: 'get-movie-details'
         });
     });
+});
+
+server.get('/', (req, res) => {
+res.json({message: 'Hello ghf backend'});
+})
+
+// Fire up the server
+server.listen((process.env.PORT || 8000), () => {
+    console.log(`Server is running on ${process.env.PORT || 8000}`);
 });
 
