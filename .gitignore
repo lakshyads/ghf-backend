@@ -1,0 +1,12 @@
+# Compiled files #
+node_modules/
+build/
+.vscode/
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.sa
+*.csv
+*.env
