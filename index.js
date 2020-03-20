@@ -1,18 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const http = require('http');
-const io = require('socket.io');
-const { Socket } = require('dgram');
-require('dotenv').config({ path: __dirname + '/.env' })
+const cors = require('cors');
+require('dotenv').config({ path: __dirname + '/.env' });
 
+// Load env values
 const API_KEY = process.env.API_KEY;
 
-// Initialize server
-const server = express();
-server.use(bodyParser.json());
-server.use(bodyParser.urlencoded({
+// Initialize express app
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
     extended: true
 }));
+
+// Initialize server
+const server = require('http').Server(app);
 
 // Initialize socket.io connection
 const io = require('socket.io')(server);
@@ -24,7 +27,7 @@ io.on("connection", skt => {
 });
 
 // Webhook endpoint
-server.post('/get-movie-details', (req, res) => {
+app.post('/get-movie-details', (req, res) => {
     const bodyData = req.body;
     const movieToSearch = req.body.queryResult && req.body.queryResult.parameters && req.body.queryResult.parameters.movie ? req.body.queryResult.parameters.movie : 'The Godfather';
     const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${movieToSearch}&apikey=${API_KEY}`);
@@ -54,7 +57,7 @@ server.post('/get-movie-details', (req, res) => {
     });
 });
 
-server.get('/', (req, res) => {
+app.get('/', (req, res) => {
 res.json({message: 'Hello ghf backend'});
 })
 
