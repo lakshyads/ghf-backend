@@ -43,7 +43,7 @@ app.post('/get-movie-details', (req, res) => {
             dataToSend += `${movie.Title} is a ${movie.Actors} starer ${movie.Genre} movie, released in ${movie.Year}. It was directed by ${movie.Director}`;
 
             // Trigger socket emit event to app
-            io.emit("Change renderable color", {eventname: 'Change renderable color', color: 'Blue'});
+            io.emit("Change renderable color", {eventName: 'Change renderable color', color: 'Blue'});
 
             return res.json({
                 fulfillmentText: dataToSend,
