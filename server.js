@@ -57,7 +57,7 @@ app.post('/ghf-actions', (req, res) => {
         }
     }
     else if(intentName === constants.intents.OPEN_ACTIVITY){
-        const activityName = params && params.activityname ? params.activityName : null;
+        const activityName = params && params.activityname ? params.activityname : null;
         if (activityName) {
             //const movie = JSON.parse(completeResponse);
             dataToSend = `${activityName} activity is now opened`;
