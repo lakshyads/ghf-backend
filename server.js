@@ -44,7 +44,7 @@ app.post('/ghf-actions', (req, res) => {
 
     // Intent: change-obj-color
     if (intentName === constants.intents.CHANGE_OBJ_COLOR) {
-        const objectColor = params && params.objectcolor ? params.objectcolor : null;
+        const objectColor = params && params.objectColor ? params.objectColor : null;
         if (objectColor) {
             //const movie = JSON.parse(completeResponse);
             dataToSend = `The color of the object is changed to ${objectColor}`;
