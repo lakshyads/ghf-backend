@@ -56,6 +56,19 @@ app.post('/ghf-actions', (req, res) => {
             dataToSend = `This color is currently unavailable`;
         }
     }
+    else if(intentName === constants.intents.OPEN_ACTIVITY){
+        const activityName = params && params.activityname ? params.activityName : null;
+        if (activityName) {
+            //const movie = JSON.parse(completeResponse);
+            dataToSend = `${activityName} activity is now opened`;
+
+            // Trigger socket emit event to app
+            io.emit("Open Activity", { intentName: intentName, activityName: activityName.toUpperCase() });
+        }
+        else {
+            dataToSend = `This activity is not available`;
+        }
+    }
 
     // Return response to dialogFlow agent
     return res.json({

@@ -7,7 +7,8 @@
 
  // DialogFlow intents
 const intents = {
-    CHANGE_OBJ_COLOR: 'change-obj-color'
+    CHANGE_OBJ_COLOR: 'change-obj-color',
+    OPEN_ACTIVITY: 'open-activity'
 }
 
 module.exports = {
