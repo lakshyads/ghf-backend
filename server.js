@@ -10,8 +10,10 @@ const cors = require('cors');
 const http = require('http');
 require('dotenv').config({ path: __dirname + '/.env' });
 
-// Load env values
+// Load env values & other resources
+const constants = require('./Resources/constants');
 // const API_KEY = process.env.API_KEY;
+
 
 // Initialize express app
 const app = express();
@@ -40,15 +42,15 @@ app.post('/ghf-actions', (req, res) => {
     const params = req.body.queryResult && req.body.queryResult.parameters && req.body.queryResult.parameters ? req.body.queryResult.parameters : null;
     let dataToSend = "";
 
-    // Intent: ar-actions
-    if (intentName === 'ar-actions') {
+    // Intent: change-obj-color
+    if (intentName === constants.intents.CHANGE_OBJ_COLOR) {
         const objectColor = params && params.objectcolor ? params.objectcolor : null;
         if (objectColor) {
             //const movie = JSON.parse(completeResponse);
             dataToSend = `The color of the object is changed to ${objectColor}`;
 
             // Trigger socket emit event to app
-            io.emit("Change renderable color", { eventName: 'Change renderable color', color: objectColor.toUpperCase() });
+            io.emit("Change renderable color", { intentName: intentName, color: objectColor.toUpperCase() });
         }
         else {
             dataToSend = `This color is currently unavailable`;
