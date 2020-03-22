@@ -61,6 +61,8 @@ app.post('/ghf-actions', (req, res) => {
         if (activityName) {
             //const movie = JSON.parse(completeResponse);
             dataToSend = `${activityName} activity is now opened`;
+            if(activityName.toUpperCase().includes('CHAIRS') || activityName.toUpperCase().includes('DESKS') || activityName.toUpperCase().includes('TABLES'))
+            dataToSend += `Click on a product for details.`;
 
             // Trigger socket emit event to app
             io.emit("Open Activity", { intentName: intentName, activityName: activityName.toUpperCase() });
