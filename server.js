@@ -56,13 +56,16 @@ app.post('/ghf-actions', (req, res) => {
             dataToSend = `This color is currently unavailable`;
         }
     }
-    else if(intentName === constants.intents.OPEN_ACTIVITY){
+    else if (intentName.toLowerCase() === constants.intents.OPEN_ACTIVITY) {
         const activityName = params && params.activityname ? params.activityname : null;
         if (activityName) {
             //const movie = JSON.parse(completeResponse);
             dataToSend = `${activityName} activity is now opened`;
-            if(activityName.toUpperCase().includes('CHAIRS') || activityName.toUpperCase().includes('DESKS') || activityName.toUpperCase().includes('TABLES'))
-            dataToSend += `Click on a product for details.`;
+            if (activityName.toUpperCase().includes('CHAIRS') || activityName.toUpperCase().includes('DESKS') || activityName.toUpperCase().includes('TABLES'))
+                dataToSend += `Click on a product for details.`;
+
+            if (activityName.toLowerCase() === "connect liveagent")
+                dataToSend = 'Support team has been notified. You will receive an acknowledgement email shortly.'
 
             // Trigger socket emit event to app
             io.emit("Open Activity", { intentName: intentName, activityName: activityName.toUpperCase() });
