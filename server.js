@@ -26,6 +26,13 @@ app.use(bodyParser.urlencoded({
 // Initialize server
 const server = require('http').Server(app);
 
+// 
+let productData = {
+    prodDesc: "Dummy description",
+    price: "Dummy price",
+    warData: "Dummy warranty"
+};
+
 // Initialize socket.io connection
 const io = require('socket.io')(server);
 let socket;
@@ -33,23 +40,17 @@ const that = this;
 // Handle socket.io events
 io.on("connection", skt => {
     socket = skt;
+
+    // Listen for product info broadcast from the app
+    socket.on('Product Info', (data) => {
+        if (data && data.price && data.warData && data.prodDesc) {
+            productData = data;
+        }
+        // send to 
+    });
 });
 
 // Receive product info from the app
-let prodDesc = "Dummy description";
-let price = "Dummy price";
-let warData = "Dummy warranty";
-socket.on('Product Info', (productData) => {
-    if (productData) {
-        if (productData.prodDesc)
-            prodDesc = productData.prodDesc;
-        if (productData.warData)
-            warData = productData.warData;
-        if (productData.price)
-            price = productData.price;
-    }
-    // send to 
-});
 
 // Webhook endpoint
 app.post('/ghf-actions', (req, res) => {
@@ -92,13 +93,13 @@ app.post('/ghf-actions', (req, res) => {
         }
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_PRICE) {
-        dataToSend = `This item retails at ${price}`;
+        dataToSend = `This item retails at ${productData.price}`;
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_WARRANTY) {
-        dataToSend = `This item comes with a warranty of ${warData}`;
+        dataToSend = `This item comes with a warranty of ${productData.warData}`;
     }
     else if (intentName.toLowerCase() === constants.intents.PRODUCT_INFO) {
-        dataToSend = prodDesc;
+        dataToSend = productData.prodDesc;
     }
 
     // Return response to dialogFlow agent
