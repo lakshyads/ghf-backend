@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http');
 require('dotenv').config({ path: __dirname + '/.env' });
+const { fs, createFile, readFileAsJSON } = require('./Utils/fileSystemUtils');
 
 // Load env values & other resources
 const constants = require('./Resources/constants');
@@ -38,9 +39,7 @@ io.on("connection", skt => {
     socket.on('Product Info', (data) => {
         console.log('Product info received', data);
         if (data && data.price && data.warData && data.prodDesc) {
-            process.env[price] = data.price;
-            process.env[warData] = data.warData;
-            process.env[prodDesc] = data.prodDesc;
+            createFile('./Resources/dummyDB.json',data);
         }
         console.log(`Updated product data: price: ${process.env.price}, warranty: ${process.env.warData}, description: ${process.env.prodDesc}`);
         // send to 
@@ -90,16 +89,19 @@ app.post('/ghf-actions', (req, res) => {
         }
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_PRICE) {
-        console.log(`Intent name: ${intentName},  data: `, process.env.price);
-        dataToSend = `This item retails at ${process.env.price}`;
+        const prodData = readFileAsJSON('./Resources/dummyDB.json').commondata;
+        console.log(`Intent name: ${intentName},  data: `, prodData);
+        dataToSend = `This item retails at ${prodData.price}`;
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_WARRANTY) {
-        console.log(`Intent name: ${intentName},  data: `, process.env.warData);
-        dataToSend = `This item comes with a warranty of ${process.env.warData}`;
+        const prodData = readFileAsJSON('./Resources/dummyDB.json').commondata;
+        console.log(`Intent name: ${intentName},  data: `, prodData);
+        dataToSend = `This item comes with a warranty of ${prodData.warData}`;
     }
     else if (intentName.toLowerCase() === constants.intents.PRODUCT_INFO) {
-        console.log(`Intent name: ${intentName},  data: `, process.env.prodDesc);
-        dataToSend = process.env.prodDesc;
+        const prodData = readFileAsJSON('./Resources/dummyDB.json').commondata;
+        console.log(`Intent name: ${intentName},  data: `, prodData);
+        dataToSend = prodData.prodDesc;
     }
 
     // Return response to dialogFlow agent
