@@ -43,6 +43,7 @@ io.on("connection", skt => {
 
     // Listen for product info broadcast from the app
     socket.on('Product Info', (data) => {
+        console.log('Product info received', data);
         if (data && data.price && data.warData && data.prodDesc) {
             productData = data;
         }
@@ -93,12 +94,15 @@ app.post('/ghf-actions', (req, res) => {
         }
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_PRICE) {
+        console.log(`Intent name: ${intentName}, product data: `, productData);
         dataToSend = `This item retails at ${productData.price}`;
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_WARRANTY) {
+        console.log(`Intent name: ${intentName}, product data: `, productData);
         dataToSend = `This item comes with a warranty of ${productData.warData}`;
     }
     else if (intentName.toLowerCase() === constants.intents.PRODUCT_INFO) {
+        console.log(`Intent name: ${intentName}, product data: `, productData);
         dataToSend = productData.prodDesc;
     }
 
