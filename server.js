@@ -26,13 +26,6 @@ app.use(bodyParser.urlencoded({
 // Initialize server
 const server = require('http').Server(app);
 
-// 
-let productData = {
-    prodDesc: "Dummy description",
-    price: "Dummy price",
-    warData: "Dummy warranty"
-};
-
 // Initialize socket.io connection
 const io = require('socket.io')(server);
 let socket;
@@ -45,9 +38,9 @@ io.on("connection", skt => {
     socket.on('Product Info', (data) => {
         console.log('Product info received', data);
         if (data && data.price && data.warData && data.prodDesc) {
-            productData = data;
+            process.env[productData] = data;
         }
-        console.log('Updated product data: ',productData);
+        console.log('Updated product data: ',process.env.productData);
         // send to 
     });
 });
@@ -95,16 +88,16 @@ app.post('/ghf-actions', (req, res) => {
         }
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_PRICE) {
-        console.log(`Intent name: ${intentName}, product data: `, productData);
-        dataToSend = `This item retails at ${productData.price}`;
+        console.log(`Intent name: ${intentName}, product data: `, process.env.productData);
+        dataToSend = `This item retails at ${process.env.productData.price}`;
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_WARRANTY) {
-        console.log(`Intent name: ${intentName}, product data: `, productData);
-        dataToSend = `This item comes with a warranty of ${productData.warData}`;
+        console.log(`Intent name: ${intentName}, product data: `, process.env.productData);
+        dataToSend = `This item comes with a warranty of ${process.env.productData.warData}`;
     }
     else if (intentName.toLowerCase() === constants.intents.PRODUCT_INFO) {
-        console.log(`Intent name: ${intentName}, product data: `, productData);
-        dataToSend = productData.prodDesc;
+        console.log(`Intent name: ${intentName}, product data: `, process.env.productData);
+        dataToSend = process.env.productData.prodDesc;
     }
 
     // Return response to dialogFlow agent
