@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 function createFile(path, data) {
-    fs.writeFile(path, data, (err, res) => {
+    fs.writeFileSync(path, data, (err, res) => {
         if (err) console.log(err);
         console.log(res);
     });

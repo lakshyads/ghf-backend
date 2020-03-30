@@ -39,9 +39,9 @@ io.on("connection", skt => {
     socket.on('Product Info', (data) => {
         console.log('Product info received', data);
         if (data && data.price && data.warData && data.prodDesc) {
-            createFile('./Resources/dummyDB.json',data);
+            createFile('./Resources/dummyDB.json',JSON.stringify(data));
         }
-        console.log(`Updated product data: price: ${process.env.price}, warranty: ${process.env.warData}, description: ${process.env.prodDesc}`);
+        // console.log(`Updated product data: price: ${process.env.price}, warranty: ${process.env.warData}, description: ${process.env.prodDesc}`);
         // send to 
     });
 });
