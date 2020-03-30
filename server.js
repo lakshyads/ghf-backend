@@ -47,6 +47,7 @@ io.on("connection", skt => {
         if (data && data.price && data.warData && data.prodDesc) {
             productData = data;
         }
+        console.log('Updated product data: ',productData);
         // send to 
     });
 });
