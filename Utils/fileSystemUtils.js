@@ -1,10 +1,15 @@
 const fs = require("fs");
 
 function createFile(path, data) {
-    fs.writeFileSync(path, data, (err, res) => {
-        if (err) console.log(err);
-        console.log(res);
-    });
+    console.log("Saving data to dummy db");
+    try{
+        fs.writeFileSync(path, data);
+        console.log("Data saved to dummy DB.");
+    }
+    catch(e){
+        console.error("Error saving data to dummy db: ", e);
+        console.log("Error saving data to dummy db: ", e);
+    }
 }
 
 function readFileAsJSON(path) {
