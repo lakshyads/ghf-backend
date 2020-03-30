@@ -35,15 +35,32 @@ io.on("connection", skt => {
     socket = skt;
 });
 
+// Receive product info from the app
+let prodDesc = "Dummy description";
+let price = "Dummy price";
+let warData = "Dummy warranty";
+socket.on('Product Info', (productData) => {
+    if (productData) {
+        if (productData.prodDesc)
+            prodDesc = productData.prodDesc;
+        if (productData.warData)
+            warData = productData.warData;
+        if (productData.price)
+            price = productData.price;
+    }
+    // send to 
+});
+
 // Webhook endpoint
 app.post('/ghf-actions', (req, res) => {
+
     const bodyData = req.body;
     const intentName = req.body.queryResult.intent.displayName;
     const params = req.body.queryResult && req.body.queryResult.parameters && req.body.queryResult.parameters ? req.body.queryResult.parameters : null;
     let dataToSend = "";
 
-    // Intent: change-obj-color
-    if (intentName === constants.intents.CHANGE_OBJ_COLOR) {
+    // Process intents
+    if (intentName.toLowerCase() === constants.intents.CHANGE_OBJ_COLOR) {
         const objectColor = params && params.objectcolor ? params.objectcolor : null;
         if (objectColor) {
             //const movie = JSON.parse(completeResponse);
@@ -73,6 +90,15 @@ app.post('/ghf-actions', (req, res) => {
         else {
             dataToSend = `This activity is not available`;
         }
+    }
+    else if (intentName.toLowerCase() === constants.intents.CHECK_PRICE) {
+        dataToSend = `This item retails at ${price}`;
+    }
+    else if (intentName.toLowerCase() === constants.intents.CHECK_WARRANTY) {
+        dataToSend = `This item comes with a warranty of ${warData}`;
+    }
+    else if (intentName.toLowerCase() === constants.intents.PRODUCT_INFO) {
+        dataToSend = prodDesc;
     }
 
     // Return response to dialogFlow agent
