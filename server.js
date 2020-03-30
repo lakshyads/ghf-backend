@@ -38,9 +38,11 @@ io.on("connection", skt => {
     socket.on('Product Info', (data) => {
         console.log('Product info received', data);
         if (data && data.price && data.warData && data.prodDesc) {
-            process.env[productData] = data;
+            process.env[price] = data.price;
+            process.env[warData] = data.warData;
+            process.env[prodDesc] = data.prodDesc;
         }
-        console.log('Updated product data: ',process.env.productData);
+        console.log(`Updated product data: price: ${process.env.price}, warranty: ${process.env.warData}, description: ${process.env.prodDesc}`);
         // send to 
     });
 });
@@ -88,16 +90,16 @@ app.post('/ghf-actions', (req, res) => {
         }
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_PRICE) {
-        console.log(`Intent name: ${intentName}, product data: `, process.env.productData);
-        dataToSend = `This item retails at ${process.env.productData.price}`;
+        console.log(`Intent name: ${intentName},  data: `, process.env.price);
+        dataToSend = `This item retails at ${process.env.price}`;
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_WARRANTY) {
-        console.log(`Intent name: ${intentName}, product data: `, process.env.productData);
-        dataToSend = `This item comes with a warranty of ${process.env.productData.warData}`;
+        console.log(`Intent name: ${intentName},  data: `, process.env.warData);
+        dataToSend = `This item comes with a warranty of ${process.env.warData}`;
     }
     else if (intentName.toLowerCase() === constants.intents.PRODUCT_INFO) {
-        console.log(`Intent name: ${intentName}, product data: `, process.env.productData);
-        dataToSend = process.env.productData.prodDesc;
+        console.log(`Intent name: ${intentName},  data: `, process.env.prodDesc);
+        dataToSend = process.env.prodDesc;
     }
 
     // Return response to dialogFlow agent
