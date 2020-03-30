@@ -38,7 +38,8 @@ io.on("connection", skt => {
     // Listen for product info broadcast from the app
     socket.on('Product Info', (data) => {
         console.log('Product info received', data);
-        if (data && data.price && data.warData && data.prodDesc) {
+        if (data && data.commondata && data.commondata.price && data.commondata.warData && data.commondata.prodDesc) {
+            
             createFile('./Resources/dummyDB.json',JSON.stringify(data));
         }
         // console.log(`Updated product data: price: ${process.env.price}, warranty: ${process.env.warData}, description: ${process.env.prodDesc}`);
