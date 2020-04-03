@@ -137,6 +137,20 @@ app.get('/get-chat-history', (req, res) => {
     });
 })
 
+// Clear chat history
+app.get('/clear-chat-history', (req,res) => {
+    if(clearChatHistory(constants.filePaths.CHAT_HISTORY))
+        res.status(200).json({
+            success: true,
+            message: "Chat history cleared"
+        });
+    else
+        res.json({
+            success: false,
+            message: "Chat history NOT cleared"
+        });
+})
+
 
 // Fire up the server
 server.listen((process.env.PORT || 8000), () => {
