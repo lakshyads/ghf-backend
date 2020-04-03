@@ -9,10 +9,12 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http');
 require('dotenv').config({ path: __dirname + '/.env' });
-const { fs, createFile, readFileAsJSON } = require('./Utils/fileSystemUtils');
+const constants = require('./Resources/constants');
+const { fs, saveFileAsJson, readFileAsJson } = require('./Resources/Utils/fileSystemUtils');
+const { saveDialog, getChatHistory, clearChatHistory } = require('./Resources/Utils/chatUtils');
+const { getCurrentDateTime } = require('./Resources/Utils/commonUtils');
 
 // Load env values & other resources
-const constants = require('./Resources/constants');
 // const API_KEY = process.env.API_KEY;
 
 
@@ -37,13 +39,11 @@ io.on("connection", skt => {
 
     // Listen for product info broadcast from the app
     socket.on('Product Info', (data) => {
+        // TEMP - Save product info to dummyDB.json
         console.log('Product info received', data);
         if (data && data.commondata && data.commondata.price && data.commondata.warData && data.commondata.prodDesc) {
-            
-            createFile('./Resources/dummyDB.json',JSON.stringify(data));
+            saveFileAsJson(constants.filePaths.PRODUCT_DATA, data);
         }
-        // console.log(`Updated product data: price: ${process.env.price}, warranty: ${process.env.warData}, description: ${process.env.prodDesc}`);
-        // send to 
     });
 });
 
@@ -52,62 +52,66 @@ io.on("connection", skt => {
 // Webhook endpoint
 app.post('/ghf-actions', (req, res) => {
 
-    const bodyData = req.body;
-    const intentName = req.body.queryResult.intent.displayName;
-    const params = req.body.queryResult && req.body.queryResult.parameters && req.body.queryResult.parameters ? req.body.queryResult.parameters : null;
-    let dataToSend = "";
+    const bodyData = req.body && req.body.queryResult ? req.body.queryResult : null;
+    const intentName = bodyData && bodyData.intent && bodyData.intent.displayName ? bodyData.intent.displayName : null;
+    const params = bodyData && bodyData.parameters && bodyData.parameters ? bodyData.parameters : null;
+    let fulfillmentText = bodyData && bodyData.fulfillmentText ? bodyData.fulfillmentText : "";
+    const queryText = bodyData && bodyData.queryText ? bodyData.queryText : null;
 
     // Process intents
     if (intentName.toLowerCase() === constants.intents.CHANGE_OBJ_COLOR) {
         const objectColor = params && params.objectcolor ? params.objectcolor : null;
         if (objectColor) {
             //const movie = JSON.parse(completeResponse);
-            dataToSend = `The color of the object is changed to ${objectColor}`;
+            fulfillmentText = `The color of the object is changed to ${objectColor}`;
 
             // Trigger socket emit event to app
             io.emit("Change renderable color", { intentName: intentName, color: objectColor.toUpperCase() });
         }
         else {
-            dataToSend = `This color is currently unavailable`;
+            fulfillmentText = `This color is currently unavailable`;
         }
     }
     else if (intentName.toLowerCase() === constants.intents.OPEN_ACTIVITY) {
         const activityName = params && params.activityname ? params.activityname : null;
         if (activityName) {
             //const movie = JSON.parse(completeResponse);
-            dataToSend = `${activityName} activity is now opened`;
+            fulfillmentText = `${activityName} activity is now opened`;
             if (activityName.toUpperCase().includes('CHAIRS') || activityName.toUpperCase().includes('DESKS') || activityName.toUpperCase().includes('TABLES'))
-                dataToSend += `Click on a product for details.`;
+                fulfillmentText += `Click on a product for details.`;
 
             if (activityName.toLowerCase() === "connect liveagent")
-                dataToSend = 'Support team has been notified. You will receive an acknowledgement email shortly.'
+                fulfillmentText = 'Support team has been notified. You will receive an acknowledgement email shortly.'
 
             // Trigger socket emit event to app
             io.emit("Open Activity", { intentName: intentName, activityName: activityName.toUpperCase() });
         }
         else {
-            dataToSend = `This activity is not available`;
+            fulfillmentText = `This activity is not available`;
         }
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_PRICE) {
-        const prodData = readFileAsJSON('./Resources/dummyDB.json').commondata;
+        const prodData = readFileAsJson(constants.filePaths.PRODUCT_DATA).commondata;
         console.log(`Intent name: ${intentName},  data: `, prodData);
-        dataToSend = `This item retails at ${prodData.price}`;
+        fulfillmentText = `This item retails at ${prodData.price}`;
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_WARRANTY) {
-        const prodData = readFileAsJSON('./Resources/dummyDB.json').commondata;
+        const prodData = readFileAsJson(constants.filePaths.PRODUCT_DATA).commondata;
         console.log(`Intent name: ${intentName},  data: `, prodData);
-        dataToSend = `This item comes with a warranty of ${prodData.warData}`;
+        fulfillmentText = `This item comes with a warranty of ${prodData.warData}`;
     }
     else if (intentName.toLowerCase() === constants.intents.PRODUCT_INFO) {
-        const prodData = readFileAsJSON('./Resources/dummyDB.json').commondata;
+        const prodData = readFileAsJson(constants.filePaths.PRODUCT_DATA).commondata;
         console.log(`Intent name: ${intentName},  data: `, prodData);
-        dataToSend = prodData.prodDesc;
+        fulfillmentText = prodData.prodDesc;
     }
+
+    // Save chat to dummyDB->chatHistory.json
+    saveDialog(constants.filePaths.CHAT_HISTORY, queryText, fulfillmentText);
 
     // Return response to dialogFlow agent
     return res.json({
-        fulfillmentText: dataToSend,
+        fulfillmentText: fulfillmentText,
         source: 'ghf-actions'
     });
 });
@@ -115,6 +119,22 @@ app.post('/ghf-actions', (req, res) => {
 // Home route
 app.get('/', (req, res) => {
     res.json({ message: 'Hello ghf backend' });
+})
+
+// Get chat history from chatHistory.json
+app.get('/get-chat-history', (req, res) => {
+    let chatHistory = [];
+    try {
+        chatHistory = getChatHistory(constants.filePaths.CHAT_HISTORY);
+    }
+    catch (e) {
+        console.error(`${getCurrentDateTime()} : Error reading chat history: ${e}`);
+    }
+
+    res.status(200).json({
+        success: true,
+        data: chatHistory
+    });
 })
 
 

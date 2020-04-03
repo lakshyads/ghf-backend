@@ -1,0 +1,17 @@
+[
+    {
+        "queryText": "tell me about this product",
+        "fulfillmentText": "Some price",
+        "timestamp": "{2020-4-2_22:48:13}"
+    },
+    {
+        "queryText": "give me details on this product",
+        "fulfillmentText": "Some price",
+        "timestamp": "{2020-4-2_22:49:5}"
+    },
+    {
+        "queryText": "tell me more",
+        "fulfillmentText": "Some desc",
+        "timestamp": "2020-4-2 22:59:45"
+    }
+]
