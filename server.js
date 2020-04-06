@@ -78,7 +78,7 @@ app.post('/ghf-actions', (req, res) => {
             //const movie = JSON.parse(completeResponse);
             fulfillmentText = `${activityName} activity is now opened`;
             if (activityName.toUpperCase().includes('CHAIRS') || activityName.toUpperCase().includes('DESKS') || activityName.toUpperCase().includes('TABLES'))
-                fulfillmentText += `Click on a product for details.`;
+                fulfillmentText += ` Click on a product for details.`;
 
             if (activityName.toLowerCase() === "connect liveagent")
                 fulfillmentText = 'Support team has been notified. You will receive an acknowledgement email shortly.'
@@ -93,12 +93,12 @@ app.post('/ghf-actions', (req, res) => {
     else if (intentName.toLowerCase() === constants.intents.CHECK_PRICE) {
         const prodData = readFileAsJson(constants.filePaths.PRODUCT_DATA).commondata;
         console.log(`Intent name: ${intentName},  data: `, prodData);
-        fulfillmentText = `This item retails at ${prodData.price}`;
+        fulfillmentText = `${prodData.price}`;
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_WARRANTY) {
         const prodData = readFileAsJson(constants.filePaths.PRODUCT_DATA).commondata;
         console.log(`Intent name: ${intentName},  data: `, prodData);
-        fulfillmentText = `This item comes with a warranty of ${prodData.warData}`;
+        fulfillmentText = `${prodData.warData}`;
     }
     else if (intentName.toLowerCase() === constants.intents.PRODUCT_INFO) {
         const prodData = readFileAsJson(constants.filePaths.PRODUCT_DATA).commondata;
