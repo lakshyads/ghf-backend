@@ -93,7 +93,7 @@ app.post('/ghf-actions', (req, res) => {
     else if (intentName.toLowerCase() === constants.intents.CHECK_PRICE) {
         const prodData = readFileAsJson(constants.filePaths.PRODUCT_DATA).commondata;
         console.log(`Intent name: ${intentName},  data: `, prodData);
-        fulfillmentText = `${prodData.price}`;
+        fulfillmentText = `This product retails for $${prodData.price}`;
     }
     else if (intentName.toLowerCase() === constants.intents.CHECK_WARRANTY) {
         const prodData = readFileAsJson(constants.filePaths.PRODUCT_DATA).commondata;
