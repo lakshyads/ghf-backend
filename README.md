@@ -6,6 +6,7 @@ Express backend with DialogFlow web-hook for GreatHomesFurniture app.
 # Features
 
   * Uses ```socket.io``` for instant response to frontend android app.
+  * Interacts with dialogFlow to provide seamless integration with Google Home devices.
 
 # Setup Instructions
 
